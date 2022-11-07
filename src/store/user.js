@@ -1,44 +1,48 @@
-import { getUserInfo } from '../api/users'
-import { getUserUsedDrive } from '../api/file'
-import catchError from '../utils/catchError'
-import app from '../main'
+import { getUserInfo } from "../api/users";
+import { getUserUsedDrive } from "../api/file";
+import catchError from "../utils/catchError";
+import app from "../main";
 const state = {
-    userInfo: {},
-}
+  userInfo: {},
+};
 const actions = {
-    async getUserInfo({ commit }) {
-        let [err, { userInfo, status, message }] = (await catchError(getUserInfo()))
-        if (err) app.$message.error(err)
-        if (status == 200) commit('SET_USERINFO', userInfo[0])
-        else app.$message.error(message)
-
-    },
-    async getUserDrive({ commit }) {
-        let [err, { data, status, message }] = (await catchError(getUserUsedDrive({ drive_id: state.userInfo.drive_id })))
-        if (err) app.$message.error(err)
-        if (status == 200) commit('SET_USERINFO_DRIVE', data[0])
-        else app.$message.error(message)
+  async getUserInfo({ commit }) {
+    let [err, { data, code, message }] = await catchError(getUserInfo());
+    if (err) app.$message.error(err);
+    if (code == 200) {
+      commit("SET_USERINFO", data);
+    } else {
+      app.$message.error(message);
     }
-}
+  },
+  async getUserDrive({ commit }) {
+    let [err, { data, status, message }] = await catchError(
+      getUserUsedDrive({ drive_id: state.userInfo.drive_id })
+    );
+    if (err) app.$message.error(err);
+    if (status == 200) commit("SET_USERINFO_DRIVE", data[0]);
+    else app.$message.error(message);
+  },
+};
 const mutations = {
-    SET_USERINFO(state, data) {
-        state.userInfo = data
-    },
-    SET_USERINFO_DRIVE(state, { drive_used, drive_size }) {
-        state.userInfo['drive_used'] = drive_used
-        state.userInfo['drive_size'] = drive_size
-    }
-}
+  SET_USERINFO(state, data) {
+    state.userInfo = data;
+  },
+  SET_USERINFO_DRIVE(state, { driveUsed, driveSize }) {
+    state.userInfo["driveUsed"] = driveUsed;
+    state.userInfo["driveSize"] = driveSize;
+  },
+};
 const getters = {
-    getUserInfo(state) {
-        return state.userInfo
-    }
-}
+  getUserInfo(state) {
+    return state.userInfo;
+  },
+};
 
 export default {
-    namespaced: true,
-    state,
-    actions,
-    mutations,
-    getters,
-}
+  namespaced: true,
+  state,
+  actions,
+  mutations,
+  getters,
+};

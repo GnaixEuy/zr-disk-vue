@@ -4,82 +4,41 @@
       <login-left-area />
       <div class="login-box">
         <div class="icon" style="margin-bottom: 10px">
-          <img
-            src="../../assets/icon.png"
-            height="40"
-            style="vertical-align: middle"
-          /><span style="font-weight: 500">小破盘</span>
+          <img src="../../assets/icon.png" height="40" style="vertical-align: middle" /><span
+            style="font-weight: 500">小破盘</span>
         </div>
         <h2 id="title">修改密码</h2>
         <el-form :model="modifyUser" :rules="rules" ref="modifyUser">
           <el-form-item prop="username">
-            <el-input
-              type="text"
-              v-model="modifyUser.username"
-              autocomplete="off"
-              placeholder="请输入邮箱"
-              clearable
-            ></el-input>
+            <el-input type="text" v-model="modifyUser.username" autocomplete="off" placeholder="请输入邮箱" clearable>
+            </el-input>
           </el-form-item>
           <el-form-item prop="newPassword">
-            <el-input
-              type="password"
-              v-model="modifyUser.newPassword"
-              autocomplete="off"
-              placeholder="请输入新密码"
-            ></el-input>
+            <el-input type="password" v-model="modifyUser.newPassword" autocomplete="off" placeholder="请输入新密码">
+            </el-input>
           </el-form-item>
           <el-form-item prop="cPassword">
-            <el-input
-              type="password"
-              v-model="modifyUser.cPassword"
-              autocomplete="off"
-              placeholder="确认新密码"
-            ></el-input>
+            <el-input type="password" v-model="modifyUser.cPassword" autocomplete="off" placeholder="确认新密码"></el-input>
           </el-form-item>
-          <el-form-item prop="yanzhengma">
+          <el-form-item prop="realVerificationCode">
             <el-row :gutter="15">
               <el-col :span="16">
-                <el-input
-                  type="text"
-                  v-model.number="modifyUser.yanzhengma"
-                  autocomplete="off"
-                  maxlength="4"
-                  placeholder="请输入验证码"
-                ></el-input>
+                <el-input type="text" v-model.number="modifyUser.realVerificationCode" autocomplete="off" maxlength="4"
+                  placeholder="请输入验证码"></el-input>
               </el-col>
               <el-col :span="4">
-                <el-button
-                  type="primary"
-                  :disabled="isLoading"
-                  @click="sendAnPwd()"
-                  style="font-size: 13px"
-                  v-loading="isLoading"
-                  element-loading-spinner="el-icon-loading"
-                  element-loading-background="rgba(255, 255, 255, 0.5)"
-                  class="btn"
-                  >获取验证码</el-button
-                >
+                <el-button type="primary" :disabled="isLoading" @click="sendAnPwd()" style="font-size: 13px"
+                  v-loading="isLoading" element-loading-spinner="el-icon-loading"
+                  element-loading-background="rgba(255, 255, 255, 0.5)" class="btn">获取验证码</el-button>
               </el-col>
             </el-row>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="modifyForm('modifyUser')"
-              style="width: 100%"
-              >修改</el-button
-            >
+            <el-button type="primary" @click="modifyForm('modifyUser')" style="width: 100%">修改</el-button>
           </el-form-item>
           <el-row>
             <el-col :span="6" :offset="16">
-              <el-link
-                @click="goBack"
-                icon="el-icon-link"
-                style="margin-top: -12px"
-                target="_blank"
-                >返回登录</el-link
-              >
+              <el-link @click="goBack" icon="el-icon-link" style="margin-top: -12px" target="_blank">返回登录</el-link>
             </el-col>
           </el-row>
         </el-form>
@@ -90,7 +49,6 @@
 <script>
 import { sendPwd } from "../../api/login";
 import { modifyPass } from "../../api/users";
-import { getPassMD5 } from "../../utils/cryto";
 import LoginLeftArea from "../../components/LoginLeftArea/LoginLeftArea.vue";
 import { mapState } from "vuex";
 import rules from "./formRules";
@@ -100,7 +58,7 @@ export default {
       modifyUser: {
         cPassword: "",
         newPassword: "",
-        yanzhengma: "",
+        realVerificationCode: "",
         username: "",
       },
       isLoading: false,
@@ -128,7 +86,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           modifyPass({
-            password: getPassMD5(this.modifyUser.newPassword),
+            password: this.modifyUser.newPassword,
             username: this.modifyUser.username,
           })
             .then((data) => {
@@ -162,6 +120,7 @@ export default {
   height: 100vh;
   user-select: none;
   background-color: #ebeffe;
+
   .login-big-box {
     position: absolute;
     left: 50%;
@@ -172,12 +131,14 @@ export default {
     justify-content: center;
     align-items: center;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+
     #title {
       margin: 10px 0;
       text-align: center;
       font-size: 18px;
     }
   }
+
   .login-box {
     width: 350px;
     border-radius: 10px;
@@ -187,11 +148,13 @@ export default {
     padding: 25px 20px;
     border-radius: 0px;
     background-color: #fff;
+
     .el-tabs--border-card {
       background-color: #fff;
     }
   }
 }
+
 .btn /deep/ .el-loading-spinner {
   top: 50%;
   transform: translateY(-50%);

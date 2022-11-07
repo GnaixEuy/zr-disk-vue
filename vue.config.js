@@ -1,23 +1,23 @@
 const path = require("path");
 
 module.exports = {
-    configureWebpack: {
-        resolve: {
-            alias: {
-                '@': path.resolve(__dirname, 'src')
-            }
-        }
+  devServer: {
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        pathRewrite: {
+          "^/api": "",
+        },
+      },
     },
-    productionSourceMap: false,
-    devServer: {
-        proxy: {
-            '/api': {
-                target: 'http://localhost:3000',
-                changeOrigin: true,
-                pathRewrite: {
-                    "^/api": ""
-                },
-            }
-        }
-    }
-}
+  },
+  configureWebpack: {
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "src"),
+      },
+    },
+  },
+  productionSourceMap: false,
+};

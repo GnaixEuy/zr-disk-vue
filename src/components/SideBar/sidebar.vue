@@ -1,7 +1,6 @@
 <script>
 import { modifyNick, modifyPass } from "../../api/users";
 import { uploadHeadImg } from "../../api/file";
-import { getPassMD5 } from "../../utils/cryto";
 import { mapState } from "vuex";
 export default {
   data() {
@@ -11,7 +10,7 @@ export default {
       modify: {
         newPass: null,
         conPass: null,
-        oldPass: null,
+        // oldPass: null,
       },
       nickname: "",
       customColor: "",
@@ -19,8 +18,8 @@ export default {
   },
   computed: {
     percentage() {
-      let { drive_used, drive_size } = this.userInfo;
-      let result = (drive_used / drive_size).toFixed(2);
+      let { driveUsed, driveSize } = this.userInfo;
+      let result = (driveUsed / driveSize).toFixed(2);
       this.percentageStatua(result);
       return result * 100;
     },
@@ -90,12 +89,11 @@ export default {
     updateNick() {
       if (!this.nickname || this.nickname.trim().length <= 1) return;
       modifyNick({
-        drive_id: this.userInfo.drive_id,
         nickname: this.nickname,
       })
         .then((data) => {
-          let { status, message } = data;
-          if (status == 200) {
+          let { code, message } = data;
+          if (code == 200) {
             this.$message.success(message);
             this.userInfo.nickname = this.nickname;
             // 关闭遮罩层
@@ -119,13 +117,11 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid && this.modify.newPass === this.modify.conPass) {
           this.dialogFormVisible = false;
-          let { drive_id } = this.userInfo;
           modifyPass({
-            password: getPassMD5(this.modify.newPass),
-            drive_id,
+            password: this.modify.newPass,
           }).then((res) => {
-            let { status, message } = res;
-            if (status == 200) {
+            let { code, message } = res;
+            if (code == 200) {
               this.$message.success(message);
               localStorage.removeItem("token");
               this.$router.replace("/login");
@@ -149,23 +145,12 @@ export default {
 <template>
   <div class="side-nav">
     <div class="icon" style="margin-bottom: 10px">
-      <img src="../../assets/icon.png" height="60" v-show="!isCollapse" /><span
-        >小破盘</span
-      >
+      <img src="../../assets/icon.png" height="60" v-show="!isCollapse" /><span>小破盘</span>
     </div>
-    <el-menu
-      default-active="/drive/file"
-      class="el-menu-vertical-demo"
-      active-text-color="#409EFF"
-      :collapse="isCollapse"
-    >
-      <el-menu-item
-        :index="item.path"
-        v-for="(item, index) in routers"
-        :key="index"
-        :disabled="item.disable"
-        @click="$router.push(item.path)"
-      >
+    <el-menu default-active="/drive/file" class="el-menu-vertical-demo" active-text-color="#409EFF"
+      :collapse="isCollapse">
+      <el-menu-item :index="item.path" v-for="(item, index) in routers" :key="index" :disabled="item.disable"
+        @click="$router.push(item.path)">
         <i :class="item.icon"></i>
         <span slot="title">{{ item.name }}</span>
       </el-menu-item>
@@ -173,18 +158,11 @@ export default {
     <div class="footer" v-show="!isCollapse">
       <div class="content">
         <span>
-          {{ userInfo.drive_used | getBToMB }}MB /
-          {{ userInfo.drive_size | getBToGB }}GB</span
-        >
+          {{ userInfo.driveUsed | getBToMB }}MB /
+          {{ userInfo.driveSize | getBToGB }}GB</span>
 
-        <el-progress
-          v-if="!isNaN(percentage)"
-          :text-inside="true"
-          :stroke-width="15"
-          :percentage="percentage"
-          :color="customColor"
-          class="jindutiao"
-        ></el-progress>
+        <el-progress v-if="!isNaN(percentage)" :text-inside="true" :stroke-width="15" :percentage="percentage"
+          :color="customColor" class="jindutiao"></el-progress>
       </div>
       <div class="user_info">
         <div class="head">
@@ -198,13 +176,7 @@ export default {
             <i slot="reference" class="el-icon-setting"></i>
             <ul class="menu">
               <li @click="handel">更换头像</li>
-              <input
-                type="file"
-                ref="fileEle"
-                @change="uploadFile"
-                accept="image/*"
-                style="display: none"
-              />
+              <input type="file" ref="fileEle" @change="uploadFile" accept="image/*" style="display: none" />
               <li @click="modify_nick">修改昵称</li>
               <li @click="openModfityPass">修改密码</li>
               <li>关于</li>
@@ -215,17 +187,8 @@ export default {
       </div>
     </div>
     <div class="nickname">
-      <el-dialog
-        title="修改昵称"
-        :visible.sync="nickNameDialog"
-        width="30%"
-        center
-      >
-        <el-input
-          v-model="nickname"
-          placeholder="请输入新的昵称"
-          ref="nickname"
-        ></el-input>
+      <el-dialog title="修改昵称" :visible.sync="nickNameDialog" width="30%" center>
+        <el-input v-model="nickname" placeholder="请输入新的昵称" ref="nickname"></el-input>
         <span slot="footer" class="dialog-footer">
           <el-button @click="nickNameDialog = false">取 消</el-button>
           <el-button type="primary" @click="updateNick">确 定</el-button>
@@ -235,33 +198,19 @@ export default {
     <div class="modfityPass">
       <el-dialog title="修改密码" :visible.sync="dialogFormVisible" width="40%">
         <el-form :model="modify" :rules="rules" ref="modifyPass">
-          <el-form-item label="原密码" label-width="120px" prop="oldPass">
-            <el-input
-              v-model="modify.oldPass"
-              autocomplete="off"
-              placeholder="请输入原密码"
-            ></el-input>
+          <!-- <el-form-item label="原密码" label-width="120px" prop="oldPass">
+            <el-input v-model="modify.oldPass" autocomplete="off" placeholder="请输入原密码"></el-input>
+          </el-form-item> -->
+          <el-form-item label="新密码" label-width="120px" prop="newPass">
+            <el-input v-model="modify.newPass" autocomplete="off" placeholder="请输入新密码"></el-input>
           </el-form-item>
-          <el-form-item label="新密码" label-width="120px" prop="oldPass">
-            <el-input
-              v-model="modify.newPass"
-              autocomplete="off"
-              placeholder="请输入新密码"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="确认密码" label-width="120px" prop="oldPass">
-            <el-input
-              v-model="modify.conPass"
-              autocomplete="off"
-              placeholder="请再次输入新密码"
-            ></el-input>
+          <el-form-item label="确认密码" label-width="120px" prop="newPass">
+            <el-input v-model="modify.conPass" autocomplete="off" placeholder="请再次输入新密码"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
-          <el-button type="primary" @click="updataPass('modifyPass')"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="updataPass('modifyPass')">确 定</el-button>
         </div>
       </el-dialog>
     </div>
@@ -272,30 +221,37 @@ export default {
   width: 200px;
   min-height: 400px;
 }
+
 .side-nav {
   width: 99%;
   height: 100%;
   border-right: solid 1px #e6e6e6;
+
   .icon {
     display: flex;
     justify-content: center;
     align-items: center;
     padding-top: 10px;
+
     img {
       margin-right: 10px;
     }
   }
+
   .footer {
     width: 100%;
     position: absolute;
     bottom: 0;
+
     .content {
       padding: 0 10px 10px 20px;
       font-size: 13px;
       border-bottom: 1px solid #444;
+
       & /deep/ .el-progress__text {
         width: 34px;
         overflow: hidden;
+
         &::after {
           position: absolute;
           content: "%";
@@ -303,27 +259,33 @@ export default {
           right: -2px;
         }
       }
+
       .jindutiao /deep/ i {
         display: none;
       }
     }
+
     .user_info {
       padding: 20px 10px 20px 10px;
       display: flex;
-      & > div {
+
+      &>div {
         flex-shrink: 0;
         flex-grow: 0;
       }
+
       .head {
         width: 50px;
         height: 50px;
         margin-right: 10px;
+
         img {
           width: 100%;
           height: 100%;
           border-radius: 50%;
         }
       }
+
       .nicheng {
         height: 50px;
         width: 80px;
@@ -335,6 +297,7 @@ export default {
         font-size: 14px;
         margin-right: 30px;
       }
+
       .set {
         height: 50px;
         line-height: 50px;

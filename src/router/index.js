@@ -1,79 +1,83 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
+import Vue from "vue";
+import VueRouter from "vue-router";
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: () => import('../views/Login.vue'),
+    path: "/login",
+    name: "Login",
+    component: () => import("../views/Login.vue"),
     meta: {
-      isShow: false
-    }
-  }, {
-    path: '/',
-    name: 'Index',
-    redirect: { name: 'Login' },
+      isShow: false,
+    },
+  },
+  {
+    path: "/",
+    name: "Index",
+    redirect: { name: "Login" },
     meta: {
-      isShow: false
-    }
-  }, {
-    path: '/drive',
-    name: 'Drive',
-    redirect: '/drive/file',
-    component: () => import('../views/Index.vue'),
+      isShow: false,
+    },
+  },
+  {
+    path: "/drive",
+    name: "Drive",
+    redirect: "/drive/file",
+    component: () => import("../views/Index.vue"),
     meta: {
-      isShow: true
+      isShow: true,
     },
     children: [
       {
-        path: 'file',
-        name: 'File',
-        component: () => import('../views/File.vue'),
+        path: "file",
+        name: "File",
+        component: () => import("../views/File.vue"),
         children: [
           {
-            path: 'folder/:file_id',
-            name: 'Folder',
-            component: () => import('../views/Folder.vue')
-          }
-        ]
-      }, {
-        path: 'album',
-        name: 'Album',
-        component: () => import('../views/Album.vue')
-      }, {
-        path: 'favorite',
-        name: 'Favorite',
-        component: () => import('../views/Favorite.vue')
-      }
-    ]
-  }, {
-    path: '/modifyCipher',
-    name: 'modifyCipher',
-    component: () => import('../views/modifyCipher/modifyCipher.vue')
-  }
-]
+            path: "folder/:file_id",
+            name: "Folder",
+            component: () => import("../views/Folder.vue"),
+          },
+        ],
+      },
+      {
+        path: "album",
+        name: "Album",
+        component: () => import("../views/Album.vue"),
+      },
+      {
+        path: "favorite",
+        name: "Favorite",
+        component: () => import("../views/Favorite.vue"),
+      },
+    ],
+  },
+  {
+    path: "/modifyCipher",
+    name: "modifyCipher",
+    component: () => import("../views/modifyCipher/modifyCipher.vue"),
+  },
+];
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: "history",
   base: process.env.BASE_URL,
-  routes
-})
+  routes,
+});
 
 router.beforeEach((to, from, next) => {
-  if (to.path == '/login') {
-    if (localStorage.getItem('token')) {
-      next('/drive/file')
-    }
-    else next()
+  if (to.path == "/login") {
+    if (localStorage.getItem("token")) {
+      next("/drive/file");
+    } else next();
   }
-  if (to.path.includes('/drive')) {
-    if (localStorage.getItem('token')) {
-      next()
-    } else next('/login')
+  if (to.path.includes("/drive")) {
+    if (localStorage.getItem("token")) {
+      next();
+    } else next("/login");
   }
-  next()
-})
+  next();
+});
 
-export default router
+export default router;
