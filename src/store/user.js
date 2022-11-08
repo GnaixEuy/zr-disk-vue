@@ -16,11 +16,11 @@ const actions = {
     }
   },
   async getUserDrive({ commit }) {
-    let [err, { data, status, message }] = await catchError(
-      getUserUsedDrive({ drive_id: state.userInfo.drive_id })
-    );
-    if (err) app.$message.error(err);
-    if (status == 200) commit("SET_USERINFO_DRIVE", data[0]);
+    let [err, { data, code, message }] = await catchError(getUserUsedDrive());
+    if (err) {
+      app.$message.error(err);
+    }
+    if (code == 200) commit("SET_USERINFO_DRIVE", data[0]);
     else app.$message.error(message);
   },
 };

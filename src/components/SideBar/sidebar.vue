@@ -1,7 +1,7 @@
 <script>
 import { modifyNick, modifyPass } from "../../api/users";
-import { uploadHeadImg } from "../../api/file";
 import { mapState } from "vuex";
+import request from "../../utils/request";
 export default {
   data() {
     return {
@@ -61,17 +61,24 @@ export default {
         return this.$message.warning("仅支持image/*图片");
       var filename = files.name;
       var reader = new FileReader();
-      var { drive_id } = this.userInfo;
       reader.onload = async function () {
-        let { head_img_url, message, status } = await uploadHeadImg({
-          chunk: reader.result,
-          filename,
-          drive_id,
-        });
-        if (status == 200) {
-          that.$message({ type: "success", message });
-          that.userInfo.headImg = head_img_url;
-        }
+        let fd = new FormData();
+        fd.set('multipartFile', files);//这里上传的是一个图片文件，以base64传递
+        fd.set("fileName", filename);
+        fd.set("size", files.size);
+        request.post('/file/uploadHeadImg', fd, {
+          headers: {
+            'Content-Type': 'multipart/form-data',   //hearder 很重要，Content-Type 要写对
+            'authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        }).then(response => {
+          if (response.code == 200) {
+            console.log(response.data.downloadUrl);
+            // that.$message({ type: "success", response.message });
+            that.userInfo.headImg.downloadUrl = response.data.downloadUrl;
+          }
+        })
+
       };
       reader.readAsDataURL(files);
     },
@@ -166,7 +173,7 @@ export default {
       </div>
       <div class="user_info">
         <div class="head">
-          <img :src="userInfo.headImg" alt="" />
+          <img :src="userInfo.headImg ? userInfo.headImg.downloadUrl : ''" alt="头像" />
         </div>
         <div class="nicheng">
           <span>{{ userInfo.nickname }}</span>

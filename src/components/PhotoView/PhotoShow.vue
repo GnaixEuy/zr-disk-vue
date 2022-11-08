@@ -2,22 +2,12 @@
   <transition>
     <div class="photo-show">
       <!-- <img v-lazy="imgSrc" @click="imgZoom" :style="cursorStyle" ref="img" /> -->
-      <img
-        draggable="false"
-        v-lazy="imgSrc.src"
-        ref="img"
-        class="show-big-pic"
-        @mousedown="mouseDown"
-        @mousemove="mouseMove"
-        @mousewheel="mouseWheel"
-      />
-      <p
-        class="imageName"
-        :style="{
-          backgroundColor: 'rgba(0, 0, 0, 0.3)',
-          color: fontColor,
-        }"
-      >
+      <img draggable="false" v-lazy="imgSrc.src" ref="img" class="show-big-pic" @mousedown="mouseDown"
+        @mousemove="mouseMove" @mousewheel="mouseWheel" />
+      <p class="imageName" :style="{
+        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        color: fontColor,
+      }">
         {{ imgSrc.imageName }}
       </p>
     </div>
@@ -213,6 +203,7 @@ export default {
   height: 100%;
   position: absolute;
   user-select: none;
+
   img {
     width: 600px;
     object-fit: contain;
@@ -226,6 +217,7 @@ export default {
     margin-top: -300px;
     filter: brightness(var(--img-brightness));
   }
+
   p.imageName {
     position: absolute;
     bottom: 100px;

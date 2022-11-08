@@ -2,20 +2,12 @@
   <transition>
     <div class="photo-view" v-if="isShow">
       <div class="close-btn" @click="setShow(false)">X</div>
-      <photo-menu
-        :menuData="menuData"
-        @changeIndex="currentIndex = $event"
-        :currentIndex="currentIndex"
-        :imageLength="imageLength"
-      ></photo-menu>
+      <photo-menu :menuData="menuData" @changeIndex="currentIndex = $event" :currentIndex="currentIndex"
+        :imageLength="imageLength"></photo-menu>
       <div class="photo-inner">
         <template v-for="(item, index) in imageData">
-          <photo-show
-            :imgSrc="item"
-            :currentIndex="currentIndex"
-            v-show="index == currentIndex"
-            :key="index"
-          ></photo-show>
+          <photo-show :imgSrc="item" :currentIndex="currentIndex" v-show="index == currentIndex" :key="index">
+          </photo-show>
         </template>
       </div>
     </div>
@@ -81,6 +73,7 @@ export default {
   --img-brightness: 100%;
   --background-color: #fff;
   --background-menu-color: rgba(0, 0, 0, 0.5);
+
   .close-btn {
     position: absolute;
     right: 0;
@@ -96,6 +89,7 @@ export default {
     color: var(--font-color);
     background-color: var(--background-color);
   }
+
   .photo-inner {
     width: 100%;
     height: 100%;
@@ -107,21 +101,26 @@ export default {
     transform: translate(-50%, -50%);
   }
 }
+
 .v-enter,
 .v-leave-to {
   opacity: 0;
 }
+
 .v-leave-to {
   transform: scale(1.1);
 }
+
 .v-enter-to,
 .v-leave {
   opacity: 1;
 }
+
 .v-enter-active,
 .v-leave-active {
   transition: all 0.3s ease-in-out;
 }
+
 @media (prefers-color-scheme: dark) {
   .photo-view {
     --font-color: #aaa;

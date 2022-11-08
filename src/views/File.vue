@@ -2,28 +2,13 @@
   <div class="File">
     <el-row :gutter="20" style="margin: 20px 0 20px">
       <el-col :span="12">
-        <div
-          :class="styleClass + ' icon-btn'"
-          @click="SET_ISCOLLAPSE(!isCollapse)"
-        ></div>
-        <input
-          type="file"
-          ref="fileEle"
-          @change="upload"
-          multiple="true"
-          style="display: none"
-        />
-        <el-button
-          type="primary"
-          @click="$refs.fileEle.click()"
-          style="margin-right: 15px"
-          ><i class="el-icon-upload el-icon--left"></i>上传</el-button
-        >
+        <div :class="styleClass + ' icon-btn'" @click="SET_ISCOLLAPSE(!isCollapse)"></div>
+        <input type="file" ref="fileEle" @change="upload" multiple="true" style="display: none" />
+        <el-button type="primary" @click="$refs.fileEle.click()" style="margin-right: 15px"><i
+            class="el-icon-upload el-icon--left"></i>上传</el-button>
 
         <el-popover placement="top" trigger="click" class="popover">
-          <el-button slot="reference"
-            ><i class="el-icon-plus el-icon--left"></i>新建</el-button
-          >
+          <el-button slot="reference"><i class="el-icon-plus el-icon--left"></i>新建</el-button>
           <ul class="menu">
             <li @click="centerDialogVisible = true">
               <i class="el-icon-folder-add el-icon--left"></i>新建文件夹
@@ -31,25 +16,20 @@
             <li><i class="el-icon-document-add el-icon--left"></i>新建文件</li>
           </ul>
         </el-popover>
-        <el-button style="margin-left: 15px"
-          ><i class="el-icon-finished el-icon--left"></i>全选</el-button
-        >
+        <el-button style="margin-left: 15px"><i class="el-icon-finished el-icon--left"></i>全选</el-button>
       </el-col>
       <el-col :span="3" :offset="6">
-        <el-input
-          placeholder="请输入内容"
-          suffix-icon="el-icon-search"
-          v-model="searchWord"
-          @keydown.enter.native="searchFile"
-        ></el-input>
+        <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
+          @keydown.enter.native="searchFile"></el-input>
       </el-col>
     </el-row>
 
     <div class="breadcrumb">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item v-for="(item, index) in routers" :key="index">
+
           <span class="nav_link" @click="goBack(item, index)">{{
-            item.file_name
+              item.file_name
           }}</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
@@ -60,71 +40,29 @@
     </div>
 
     <div class="file-page">
-      <el-pagination
-        background
-        layout="prev, pager, next"
-        :page-size="pageLimit"
-        :page-count="totalPage"
-        :current-page="currentPage"
-        @prev-click="prevClick"
-        @next-click="nextClick"
-        @current-change="nextClick"
-      />
+      <el-pagination background layout="prev, pager, next" :page-size="pageLimit" :page-count="totalPage"
+        :current-page="currentPage" @prev-click="prevClick" @next-click="nextClick" @current-change="nextClick" />
     </div>
 
     <transition name="slide-fade">
-      <div
-        class="footerMenu"
-        v-show="footerMenuShow"
-        @click="footerMenuShow = !footerMenuShow"
-      >
+      <div class="footerMenu" v-show="footerMenuShow" @click="footerMenuShow = !footerMenuShow">
         <div class="footItem">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="下载"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="下载" placement="top-start">
             <el-button icon="el-icon-download"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="收藏"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="收藏" placement="top-start">
             <el-button icon="el-icon-star-off"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="转发"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="转发" placement="top-start">
             <el-button icon="el-icon-share"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="删除"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="删除" placement="top-start">
             <el-button icon="el-icon-delete"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="更多"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="更多" placement="top-start">
             <el-button icon="el-icon-more"></el-button>
           </el-tooltip>
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="取消选择"
-            placement="top-start"
-          >
+          <el-tooltip class="item" effect="dark" content="取消选择" placement="top-start">
             <el-button icon="el-icon-circle-close"></el-button>
           </el-tooltip>
         </div>
@@ -132,16 +70,8 @@
     </transition>
 
     <div class="mkdir">
-      <el-dialog
-        title="提示"
-        :visible.sync="centerDialogVisible"
-        width="30%"
-        center
-      >
-        <el-input
-          placeholder="请输入文件夹名"
-          v-model="dirParams.dir_name"
-        ></el-input>
+      <el-dialog title="提示" :visible.sync="centerDialogVisible" width="30%" center>
+        <el-input placeholder="请输入文件夹名" v-model="dirParams.dir_name"></el-input>
         <span slot="footer" class="dialog-footer">
           <el-button @click="centerDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="mkdir_btn">确 定</el-button>
@@ -269,13 +199,13 @@ export default {
   },
   mounted() {
     this.menuEle = this.$refs.fileMenu;
-    this.$alert(
-      "<div>文件不会长期存储，请注意进行文件备份或下载。</div>",
-      "消息提醒",
-      {
-        dangerouslyUseHTMLString: true,
-      }
-    );
+    // this.$alert(
+    //   "<div>文件不会长期存储，请注意进行文件备份或下载。</div>",
+    //   "消息提醒",
+    //   {
+    //     dangerouslyUseHTMLString: true,
+    //   }
+    // );
   },
 };
 </script>
@@ -285,6 +215,7 @@ export default {
 .slide-fade-leave-active {
   transition: all 0.5s ease;
 }
+
 .slide-fade-enter,
 .slide-fade-leave-to {
   transform: translateX(10px);
@@ -293,12 +224,15 @@ export default {
 
 .File {
   height: calc(100vh - 60px);
+
   .breadcrumb {
     margin: 15px 15px;
   }
+
   .breadcrumb /deep/ .nav_link {
     cursor: pointer;
   }
+
   div.icon-btn {
     font-size: 25px;
     height: 40px;
@@ -308,6 +242,7 @@ export default {
     cursor: pointer;
     vertical-align: middle;
   }
+
   .fileList {
     padding: 15px 0 0 0px;
     margin-left: 10px;
@@ -315,6 +250,7 @@ export default {
     overflow: hidden;
     overflow-y: auto;
     border-radius: 5px;
+
     &::-webkit-scrollbar-button {
       display: none;
     }
@@ -329,12 +265,14 @@ export default {
       background: #409eff;
     }
   }
+
   .file-page {
     padding-top: 25px;
     display: flex;
     justify-content: center;
     align-items: center;
   }
+
   .footerMenu {
     padding: 10px;
     width: calc(100% - 250px);
@@ -342,6 +280,7 @@ export default {
     position: absolute;
     left: 250px;
     bottom: 0;
+
     .footItem {
       position: absolute;
       bottom: 30px;
@@ -350,13 +289,16 @@ export default {
       border-radius: 10px;
       transform: translateX(-50%);
       background-color: #000;
+
       button {
         padding: 5px;
         background-color: transparent;
         border: 1px solid transparent;
+
         &:hover {
           background-color: #545459;
         }
+
         /deep/ i {
           font-size: 17px;
           color: #ddd;
@@ -364,14 +306,17 @@ export default {
       }
     }
   }
+
   .upload_file_state {
     .box-card {
       width: 420px;
       position: absolute;
       right: 10px;
       bottom: 20px;
+
       .item {
         padding: 10px 0;
+
         .file_name {
           width: 130px;
           overflow: hidden;
@@ -379,6 +324,7 @@ export default {
           text-overflow: ellipsis;
         }
       }
+
       p {
         font-size: 13px;
         color: #aaa;
@@ -386,9 +332,11 @@ export default {
     }
   }
 }
+
 .tui-checkbox:checked {
   background: #1673ff;
 }
+
 .tui-checkbox {
   width: 15px;
   height: 15px;
@@ -409,10 +357,12 @@ export default {
   -webkit-transition: background-color ease 0.1s;
   transition: background-color ease 0.1s;
   margin-bottom: 30px;
+
   &:hover {
     border: #1673ff 1px solid;
   }
 }
+
 .tui-checkbox:checked::after {
   content: "";
   top: 2px;

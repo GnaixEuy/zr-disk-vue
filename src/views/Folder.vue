@@ -3,18 +3,10 @@
     <div class="boundary" v-if="isEmpty">
       <el-row :gutter="20" v-for="(ele, key) in fileList" :key="key">
         <el-col :span="3" v-for="(item, index) in ele" :key="index">
-          <div
-            class="fileItem"
-            ref="fileItem"
-            @contextmenu="handelMenu(index, key, $event)"
-            @click="open(item, $event)"
-          >
+          <div class="fileItem" ref="fileItem" @contextmenu="handelMenu(index, key, $event)"
+            @click="open(item, $event)">
             <div class="selete" @click.stop="add_seleted(item, index, key)">
-              <el-checkbox
-                v-model="arryCheck"
-                :value="index"
-                @change="handel"
-              ></el-checkbox>
+              <el-checkbox v-model="arryCheck" :value="index" @change="handel"></el-checkbox>
             </div>
             <div class="more" @click.stop="handelMenu(index, key, $event)">
               <i class="el-icon-more"></i>
@@ -23,8 +15,8 @@
               <FileType :item="item" />
             </div>
             <div class="title">
-              <p class="name">{{ item.file_name }}</p>
-              <p class="time">{{ format("MM/DD hh:mm", item.updated_at) }}</p>
+              <p class="name">{{ item.name }}</p>
+              <p class="time">{{ format("MM/DD hh:mm", item.updatedDateTime) }}</p>
             </div>
           </div>
         </el-col>
@@ -32,19 +24,8 @@
     </div>
     <div class="empty" v-else>
       <el-empty>
-        <input
-          type="file"
-          ref="fileEle"
-          @change="upload"
-          multiple="true"
-          style="display: none"
-        />
-        <el-button
-          type="primary"
-          @click="$refs.fileEle.click()"
-          v-if="favorite == 'file'"
-          >上传文件</el-button
-        >
+        <input type="file" ref="fileEle" @change="upload" multiple="true" style="display: none" />
+        <el-button type="primary" @click="$refs.fileEle.click()" v-if="favorite == 'file'">上传文件</el-button>
       </el-empty>
     </div>
 
@@ -64,11 +45,7 @@
 
     <transition name="slide-fade">
       <el-dialog title="提示" :visible.sync="dialogRename" width="30%" center>
-        <el-input
-          placeholder="重命名"
-          v-model="reName.prefixname"
-          v-focus
-        ></el-input>
+        <el-input placeholder="重命名" v-model="reName.prefixname" v-focus></el-input>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogRename = false">取 消</el-button>
           <el-button type="primary" @click="re_name">确 定</el-button>
@@ -78,12 +55,8 @@
 
     <transition name="slide-fade">
       <div class="fileDetailInfo">
-        <el-dialog
-          :title="fileInfo.file_name"
-          :visible.sync="dialogFileInfo"
-          width="300px"
-          :before-close="detail_info_close"
-        >
+        <el-dialog :title="fileInfo.file_name" :visible.sync="dialogFileInfo" width="300px"
+          :before-close="detail_info_close">
           <div class="img">
             <FileType :item="fileInfo"></FileType>
           </div>
@@ -106,13 +79,13 @@
               <li>
                 <div class="col"><i class="el-icon-date"></i>创建时间</div>
                 <span>{{
-                  format("YYYY-MM-DD hh:mm:ss", fileInfo.created_at)
+                    format("YYYY-MM-DD hh:mm:ss", fileInfo.created_at)
                 }}</span>
               </li>
               <li>
                 <div class="col"><i class="el-icon-time"></i>修改时间</div>
                 <span>{{
-                  format("YYYY-MM-DD hh:mm:ss", fileInfo.updated_at)
+                    format("YYYY-MM-DD hh:mm:ss", fileInfo.updated_at)
                 }}</span>
               </li>
             </ul>
@@ -123,17 +96,10 @@
 
     <div class="file_move" v-if="dialogMove">
       <el-dialog title="提示" :visible.sync="dialogMove" width="30%">
-        <el-tree
-          :props="{ label: 'file_name' }"
-          :load="loadNode"
-          lazy
-          @node-click="nodeClick"
-        ></el-tree>
+        <el-tree :props="{ label: 'file_name' }" :load="loadNode" lazy @node-click="nodeClick"></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogMove = false">取 消</el-button>
-          <el-button type="primary" @click="move_action" :disabled="disabled"
-            >确 定</el-button
-          >
+          <el-button type="primary" @click="move_action" :disabled="disabled">确 定</el-button>
         </span>
       </el-dialog>
     </div>
@@ -255,7 +221,7 @@ export default {
       });
     },
 
-    openFullScreen1() {},
+    openFullScreen1() { },
 
     // 获取tree组件点击data
     nodeClick(data) {
@@ -319,23 +285,21 @@ export default {
     },
 
     // 点击复制
-    copy() {},
+    copy() { },
     // 获取用户文件
     getUserFile(
-      drive_id = this.userInfo.drive_id,
       parent_file_id = this.parent_file_id
     ) {
       getFile({
-        drive_id,
         limit: this.pageLimit,
         page: this.currentPage,
         parent_file_id,
       })
         .then((res) => {
-          let { fileList, DOMAIN } = res;
+          let { fileList } = res;
+          fileList = res.data.records;
           this.List = fileList;
-          this.DOMAIN = DOMAIN;
-          this.SET_FILE_TOTAL(fileList && res.fileList.length);
+          this.SET_FILE_TOTAL(fileList && fileList.length);
           this.formatFileData(fileList);
           this.loading = false;
         })
@@ -356,7 +320,6 @@ export default {
     getPhotos() {
       getPhoto({ drive_id: this.userInfo.drive_id }).then((res) => {
         this.List = res.data;
-        this.DOMAIN = res.DOMAIN;
         this.formatFileData(res.data);
       });
     },
@@ -376,16 +339,16 @@ export default {
       this.menuShow = true; //展示或隐藏右键菜单
       this.setContextmenu(e);
     },
-    handel() {},
+    handel() { },
 
     // 格式化图片信息
     formatImageData(fileData) {
       this.imageData = fileData
         .filter((item) => item.type.includes("image"))
         .map((item) => ({
-          src: item.DOMAIN + "/" + item.cover_url,
-          imageName: item.file_name,
-          file_id: item.file_id,
+          src: item.coverUrl,
+          imageName: item.name,
+          file_id: item.id,
         }));
     },
 
@@ -395,7 +358,7 @@ export default {
       let menuLeft = e.clientX,
         menuTop = e.clientY;
       let clientHeight =
-          window.innerHeight || document.documentElement.clientHeight,
+        window.innerHeight || document.documentElement.clientHeight,
         clientWidth = window.innerWidth || document.documentElement.clientWidth;
 
       if (clientHeight - menuTop < height) menuTop -= height;
@@ -415,8 +378,7 @@ export default {
       })
         .then(() => {
           delFile({
-            file_id: this.List[this.clickIndex].file_id,
-            drive_id: this.userInfo.drive_id,
+            id: this.List[this.clickIndex].id,
           })
             .then(async (res) => {
               that.fileList[this.clickKey].splice(
@@ -430,7 +392,7 @@ export default {
               this.$message.error(err.message);
             });
         })
-        .catch(() => {});
+        .catch(() => { });
     },
 
     // 点击事件
@@ -456,7 +418,7 @@ export default {
       } else if (type.includes("image")) {
         this.formatImageData(this.List);
         let currentIndex = this.imageData.findIndex(
-          (info) => info.file_id == item.file_id
+          info => info.file_id == item.id
         );
         this.$photoview(this.getCurrentImageData(currentIndex), currentIndex);
       }
@@ -486,7 +448,7 @@ export default {
           if (status == 200) download_file(download_url, file_name);
           else this.$message.error(message);
         })
-        .catch(() => {});
+        .catch(() => { });
     },
 
     // 获取文件链接
@@ -511,7 +473,6 @@ export default {
 
     // 重命名
     async re_name() {
-      let { drive_id } = this.userInfo;
       let { file_id, type } = this.List[this.clickIndex];
       let filename = "";
       let { extname, prefixname } = this.reName;
@@ -521,9 +482,8 @@ export default {
         filename = prefixname + extname;
       }
       let { status, message } = await modify({
-        drive_id,
-        file_id,
-        filename,
+        id: file_id,
+        fileName: filename,
         type,
       });
       if (status == 200) {
@@ -584,6 +544,7 @@ export default {
 .slide-fade-leave-active {
   transition: all 0.5s ease;
 }
+
 .slide-fade-enter,
 .slide-fade-leave-to {
   transform: translateX(10px);
@@ -592,13 +553,16 @@ export default {
 
 .active {
   background-color: #f5f5f6;
-  & > .selete,
+
+  &>.selete,
   .more {
     display: inline-block;
   }
 }
+
 .folder {
   padding: 10px;
+
   .fileItem {
     width: 100px;
     padding: 10px;
@@ -606,25 +570,31 @@ export default {
     border-radius: 10px;
     cursor: pointer;
     position: relative;
+
     a {
       display: inline-block;
       text-decoration: none;
     }
+
     &:hover {
       background-color: #f5f5f6;
-      & > .selete,
+
+      &>.selete,
       .more {
         display: inline-block;
       }
     }
+
     .img {
       width: 100px;
       height: 100px;
+
       img {
         width: 100%;
         height: 100%;
       }
     }
+
     .selete {
       display: none;
       position: absolute;
@@ -636,6 +606,7 @@ export default {
       border-radius: 5px;
       background-color: #fff;
     }
+
     .more {
       padding: 3px;
       height: 15px;
@@ -646,16 +617,19 @@ export default {
       top: 1px;
       border-radius: 5px;
       background-color: #fff;
+
       i {
         color: #aaa;
         line-height: 18px;
         height: 18px;
         display: block;
+
         &:hover {
           color: #000;
         }
       }
     }
+
     .title {
       width: 100px;
 
@@ -664,11 +638,13 @@ export default {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+
         &.name {
           font-weight: 100;
           font-size: 13px;
           font-family: Arial, Helvetica, sans-serif;
         }
+
         &.time {
           font-size: 12px;
           color: #bbb;
@@ -676,14 +652,17 @@ export default {
       }
     }
   }
+
   .el-checkbox {
     position: absolute;
     left: 4px;
     top: 0;
+
     & /deep/ .el-checkbox__inner {
       border-radius: 50%;
     }
   }
+
   .fileMenuAction {
     padding: 10px;
     width: 100%;
@@ -692,6 +671,7 @@ export default {
     left: 0;
     top: 0;
     z-index: 3;
+
     ul.fileMenu {
       margin: 0;
       padding: 0;
@@ -700,21 +680,25 @@ export default {
       background-color: #fff;
       border-radius: 2px;
       box-shadow: 0 0 5px 5px #eee;
+
       li {
         list-style: none;
         padding: 10px 20px;
         border-radius: 2px;
         font-size: 14px;
         cursor: pointer;
+
         &:hover {
           background-color: #c5c5c5;
         }
       }
     }
   }
+
   .fileDetailInfo {
     width: 300px;
     position: relative;
+
     & /deep/ .el-dialog__title {
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -722,27 +706,33 @@ export default {
       display: inline-block;
       overflow: hidden;
     }
+
     & /deep/ .img {
       margin: 0 auto;
       text-align: center;
       width: 100px;
       height: 100px;
     }
+
     ul {
       margin: 0;
       padding: 10px 0 0 0;
+
       li {
         list-style: none;
         padding: 3px;
+
         div.col {
           margin: 5px;
           padding: 0;
           display: flex;
           flex-wrap: wrap;
           align-items: center;
+
           i {
             margin-right: 10px;
           }
+
           .filename {
             flex-shrink: 0;
             width: 50%;
@@ -750,17 +740,20 @@ export default {
             text-overflow: ellipsis;
             white-space: nowrap;
           }
+
           span.file_size {
             cursor: pointer;
             padding-left: 20px;
           }
         }
+
         span {
           padding-left: 30px;
         }
       }
     }
   }
+
   .file_move {
     width: 300px;
     position: absolute;
