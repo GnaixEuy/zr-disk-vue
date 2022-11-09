@@ -36,8 +36,8 @@ function getUserUsedDrive(params) {
   return request.get("/user/getUsedDrive", params);
 }
 
-function getSearch(params) {
-  return request.post("/file/search", params);
+function getSearch(searchWord) {
+  return request.get(`/file/search/${searchWord}`);
 }
 
 function getFolder(params) {
@@ -45,11 +45,11 @@ function getFolder(params) {
 }
 
 function getCollection(params) {
-  return request.post("/file/getCollection", params);
+  return request.get("/file/getCollection", params);
 }
 
 function setCollection(params) {
-  return request.post("/file/setCollection", params);
+  return request.put("/file/setCollection", params);
 }
 
 function getPhoto(params) {

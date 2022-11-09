@@ -240,19 +240,18 @@ export default {
 
     // 设置收藏
     async collection() {
-      let { file_id, isCollection } = this.List[this.clickIndex];
-      if (isCollection) isCollection = 0;
-      else isCollection = 1;
-      let { status, message } = await setCollection({
-        drive_id: this.userInfo.drive_id,
-        file_id,
-        isCollection,
+      let { id, collection } = this.List[this.clickIndex];
+      collection = !collection;
+      let { code, data } = await setCollection({
+        id,
+        collection,
       });
-      if (status == 200) {
-        this.List[this.clickIndex].isCollection = isCollection;
-        this.$message.success(message);
+      if (code == 200) {
+        this.List[this.clickIndex].collection = collection;
+        this.$message.success(data);
+        this.updateFileList();
       } else {
-        this.$message.error(message);
+        this.$message.error(data);
       }
     },
     updateFileList() {
@@ -270,9 +269,9 @@ export default {
       let listItem = [];
       let count = null;
       let aryLength = data.length;
-      data.forEach((item) => {
-        item.DOMAIN = this.DOMAIN;
-      });
+      // data.forEach((item) => {
+      //   item.DOMAIN = this.DOMAIN;
+      // });
       if (aryLength % 8 == 0) {
         count = aryLength / 8;
       } else {
@@ -310,9 +309,10 @@ export default {
 
     // 获取收藏文件
     getFavorite() {
-      getCollection({ drive_id: this.userInfo.drive_id }).then((res) => {
+      getCollection().then((res) => {
         this.List = res.data;
         this.formatFileData(res.data);
+        this.loading = false;
       });
     },
 
@@ -321,6 +321,9 @@ export default {
       getPhoto().then((res) => {
         this.List = res.data;
         this.formatFileData(res.data);
+        this.loading = false;
+      }).catch(() => {
+        this.loading = true;
       });
     },
     // 鼠标右键菜单
@@ -329,11 +332,11 @@ export default {
       this.clickIndex = this.col_num * key + index;
       this.clickKey = key;
       this.clickOrIndex = index;
-      let { file_name, type, isCollection } = this.List[this.clickIndex];
-      this.mkdirName = file_name;
+      let { name, type, collection } = this.List[this.clickIndex];
+      this.mkdirName = name;
       if (type == "folder") this.isFolder = true;
       else this.isFolder = false;
-      if (isCollection == "0") this.collectionText = "收藏";
+      if (!collection) this.collectionText = "收藏";
       else this.collectionText = "取消收藏";
 
       this.menuShow = true; //展示或隐藏右键菜单
@@ -364,7 +367,6 @@ export default {
 
       if (clientHeight - menuTop < height) menuTop -= height;
       if (clientWidth - menuLeft < width) menuLeft -= width;
-
       this.menuEle.style.left = menuLeft + "px";
       this.menuEle.style.top = menuTop + "px";
     },

@@ -1,13 +1,7 @@
 <template>
   <div class="video_play">
     <el-row :gutter="20">
-      <el-col :span="6"
-        ><i
-          class="el-icon-close"
-          @click="video_pause"
-          style="cursor: pointer"
-        ></i
-      ></el-col>
+      <el-col :span="6"><i class="el-icon-close" @click="video_pause" style="cursor: pointer"></i></el-col>
       <el-col :span="6" :offset="3" style="text-align: center">
         <span class="video_name">{{ video_name }}</span>
       </el-col>
@@ -47,7 +41,7 @@ export default {
     initDplay() {
       this.container = document.querySelector(".dplayer");
       if (!this.container || this.dp || !this.video_info) return;
-      let { download_url, DOMAIN, file_name, type, cover_url } =
+      let { downloadUrl, name, type, coverUrl } =
         this.video_info;
       let options = {
         theme: "#00A1D6",
@@ -61,8 +55,8 @@ export default {
         mutex: true,
         logo: require("../../assets/logo1.gif"),
         video: {
-          url: DOMAIN + "/" + download_url,
-          pic: DOMAIN + "/" + cover_url,
+          url: downloadUrl,
+          pic: coverUrl,
         },
         danmaku: {
           id: "svdgdfb2e43",
@@ -70,18 +64,18 @@ export default {
         },
         container: this.container,
       };
-      this.video_name = file_name;
+      this.video_name = name;
       this.file_type = type;
       this.dp = new DPlayer(options);
       this.setNavigatorData(this.video_info);
     },
-    setNavigatorData({ DOMAIN, cover_url }) {
+    setNavigatorData({ coverUrl }) {
       navigator.mediaSession.metadata = new window.MediaMetadata({
         title: this.video_name,
         artwork: [
           {
             sizes: "320x180",
-            src: DOMAIN + "/" + cover_url,
+            src: coverUrl,
             type: "",
           },
         ],
@@ -106,6 +100,7 @@ export default {
   padding: 20px;
   z-index: 2;
   background-color: #fff;
+
   .view {
     width: 1000px;
     height: 560px;
@@ -113,12 +108,14 @@ export default {
     position: relative;
     overflow: hidden;
     background-color: #000;
+
     video {
       width: 1000px;
       height: 100%;
       object-fit: contain;
     }
   }
+
   .images {
     width: 1000px;
     height: 560px;
@@ -130,17 +127,20 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+
     img {
       max-width: 100%;
       object-fit: cover;
     }
   }
+
   .dplayer {
     max-width: 1000px;
     height: 520px;
     position: relative;
     margin: 0 auto;
     top: 40px;
+
     & /deep/ .dplayer-logo {
       max-width: 100px;
       max-height: 100px;

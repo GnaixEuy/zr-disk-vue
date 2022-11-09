@@ -161,10 +161,9 @@ export default {
         file_name: `${this.searchWord}的搜索结果`,
         path: Date.now(),
       });
-      getSearch({
-        searchWord: this.searchWord,
-        drive_id: this.userInfo.drive_id,
-      }).then((res) => {
+      getSearch(
+        this.searchWord,
+      ).then((res) => {
         this.searchWord = "";
         this.searchFileItem = res.data;
       });
