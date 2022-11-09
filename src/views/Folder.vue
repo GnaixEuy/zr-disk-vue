@@ -5,8 +5,8 @@
         <el-col :span="3" v-for="(item, index) in ele" :key="index">
           <div class="fileItem" ref="fileItem" @contextmenu="handelMenu(index, key, $event)"
             @click="open(item, $event)">
-            <div class="selete" @click.stop="add_seleted(item, index, key)">
-              <el-checkbox v-model="arryCheck" :value="index" @change="handel"></el-checkbox>
+            <div class="selete" @click.stop="add_seleted(item, index)">
+              <el-checkbox v-model="arryCheck" :value="index" @change="handel(index)"></el-checkbox>
             </div>
             <div class="more" @click.stop="handelMenu(index, key, $event)">
               <i class="el-icon-more"></i>
@@ -66,9 +66,9 @@
               <li>
                 <div class="col">
                   <i class="el-icon-info"></i>
-                  <div class="filename">{{ fileInfo.file_name }}</div>
-                  <span class="file_size" :title="fileInfo.file_size + 'kb'">
-                    {{ fileInfo.file_size | KbToMb }} M
+                  <div class="filename">{{ fileInfo.name }}</div>
+                  <span class="file_size" :title="fileInfo.size + 'kb'">
+                    {{ fileInfo.size | KbToMb }} M
                   </span>
                 </div>
               </li>
@@ -79,13 +79,13 @@
               <li>
                 <div class="col"><i class="el-icon-date"></i>创建时间</div>
                 <span>{{
-                    format("YYYY-MM-DD hh:mm:ss", fileInfo.created_at)
+                    format("YYYY-MM-DD hh:mm:ss", fileInfo.createdDateTime)
                 }}</span>
               </li>
               <li>
                 <div class="col"><i class="el-icon-time"></i>修改时间</div>
                 <span>{{
-                    format("YYYY-MM-DD hh:mm:ss", fileInfo.updated_at)
+                    format("YYYY-MM-DD hh:mm:ss", fileInfo.updatedDateTime)
                 }}</span>
               </li>
             </ul>
@@ -296,10 +296,10 @@ export default {
         parent_file_id,
       })
         .then((res) => {
-          let { fileList } = res;
-          fileList = res.data.records;
+          let { data } = res;
+          let fileList = data.records;
           this.List = fileList;
-          this.SET_FILE_TOTAL(fileList && fileList.length);
+          this.SET_FILE_TOTAL(data.total && fileList.length);
           this.formatFileData(fileList);
           this.loading = false;
         })
@@ -318,7 +318,7 @@ export default {
 
     // 获取用户图片
     getPhotos() {
-      getPhoto({ drive_id: this.userInfo.drive_id }).then((res) => {
+      getPhoto().then((res) => {
         this.List = res.data;
         this.formatFileData(res.data);
       });
@@ -339,7 +339,8 @@ export default {
       this.menuShow = true; //展示或隐藏右键菜单
       this.setContextmenu(e);
     },
-    handel() { },
+    handel() {
+    },
 
     // 格式化图片信息
     formatImageData(fileData) {
@@ -397,15 +398,15 @@ export default {
 
     // 点击事件
     open(item) {
-      let { type, file_id, file_name } = item;
+      let { type, id, name } = item;
       if (type == "folder") {
         this.loading = true;
-        this.getUserFile(this.userInfo.drive_id, file_id);
+        this.getUserFile(this.userInfo.drive_id, id);
         this.SET_PARENT_FILE_ID({
-          parent_file_id: file_id,
-          parent_folder: file_name,
+          parent_file_id: id,
+          parent_folder: name,
         });
-        this.SET_ROUTER({ file_name, path: file_id });
+        this.SET_ROUTER({ name, path: id });
       } else if (type.includes("video")) {
         this.SET_VIDEO_INFO(item);
         this.SET_IS_OPEN(true);
@@ -413,8 +414,8 @@ export default {
       } else if (type.includes("audio")) {
         this.$audioPlayer.show(item);
       } else if (type.includes("search")) {
-        this.SET_PARENT_FILE_ID({ parent_file_id: file_id });
-        this.SET_ROUTER({ file_name, path: file_id });
+        this.SET_PARENT_FILE_ID({ parent_file_id: id });
+        this.SET_ROUTER({ name, path: id });
       } else if (type.includes("image")) {
         this.formatImageData(this.List);
         let currentIndex = this.imageData.findIndex(
@@ -441,11 +442,11 @@ export default {
 
     // 下载
     download_url() {
-      let { file_id, file_name } = this.List[this.clickIndex];
-      downloadFile(file_id, this.userInfo.drive_id)
+      let { id, name } = this.List[this.clickIndex];
+      downloadFile(id)
         .then((res) => {
-          let { status, message, download_url } = res;
-          if (status == 200) download_file(download_url, file_name);
+          let { code, message, data } = res;
+          if (code == 200) download_file(data, name);
           else this.$message.error(message);
         })
         .catch(() => { });
@@ -453,27 +454,27 @@ export default {
 
     // 获取文件链接
     async getDownload_url() {
-      let { DOMAIN, download_url } = this.List[this.clickIndex];
-      let realDownload_url = encodeURI(DOMAIN + "/" + download_url);
+      let { downloadUrl } = this.List[this.clickIndex];
+      let realDownload_url = encodeURI(downloadUrl);
       copy.call(this, realDownload_url);
     },
 
     // 重命名
     modify_name() {
       this.dialogRename = true;
-      let { file_name: filename, type } = this.List[this.clickIndex];
+      let { name, type } = this.List[this.clickIndex];
       if (type == "folder") {
-        this.reName.prefixname = filename;
+        this.reName.prefixname = name;
       } else {
-        let index = filename.lastIndexOf(".");
-        this.reName.prefixname = filename.slice(0, index);
-        this.reName.extname = filename.slice(index);
+        let index = name.lastIndexOf(".");
+        this.reName.prefixname = name.slice(0, index);
+        this.reName.extname = name.slice(index);
       }
     },
 
     // 重命名
     async re_name() {
-      let { file_id, type } = this.List[this.clickIndex];
+      let { id, type } = this.List[this.clickIndex];
       let filename = "";
       let { extname, prefixname } = this.reName;
       if (type == "folder") {
@@ -481,12 +482,12 @@ export default {
       } else {
         filename = prefixname + extname;
       }
-      let { status, message } = await modify({
-        id: file_id,
+      let { code, message } = await modify({
+        id,
         fileName: filename,
         type,
       });
-      if (status == 200) {
+      if (code == 200) {
         this.$message.success(message);
         this.getUserFile();
       } else {

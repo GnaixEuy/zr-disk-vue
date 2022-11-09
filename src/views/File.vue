@@ -29,7 +29,7 @@
         <el-breadcrumb-item v-for="(item, index) in routers" :key="index">
 
           <span class="nav_link" @click="goBack(item, index)">{{
-              item.file_name
+              item.name
           }}</span>
         </el-breadcrumb-item>
       </el-breadcrumb>

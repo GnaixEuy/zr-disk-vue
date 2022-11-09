@@ -7,6 +7,7 @@ let uploadFileMixin = {
       chunkSize: 1024 * 1024,
       taskLength: 0,
       loaded: 0,
+      md5: 0,
     };
   },
   methods: {
@@ -59,9 +60,9 @@ let uploadFileMixin = {
       var file = e.target.files[0];
       if (!file) return;
       if (!this.checkedAbleUpload()) return;
-
       let fileParts = this.cutFileSlice(e.target.files);
       this.$Progress.init(fileParts);
+      this.md5 = getMD5(e.target.files[0].name);
       this.sendRequest(fileParts);
     },
     // 更新上传进度
@@ -79,6 +80,8 @@ let uploadFileMixin = {
         for (let i = 0; i < listLength; i++) {
           let formData = new FormData();
           formData.append("file", list.shift());
+          formData.append("md5", this.md5);
+          formData.append("chunk", i);
           await uploadFiles(formData);
           index++;
           filePart.fileInfo.percentage = this.progressPerce(index, total);
@@ -91,17 +94,14 @@ let uploadFileMixin = {
     },
     // 合并文件
     mergeFile({ fileName }) {
-      console.log(this);
       var file_id = getMD5(fileName);
-      let { drive_id } = this.userInfo;
       let parent_file_id = this.parent_file_id;
       let parent_folder = this.parent_folder;
       merge({
-        drive_id,
-        file_id,
-        file_name: fileName,
+        md5: file_id,
+        fileName,
         parent_file_id,
-        parent_folder,
+        parentPath: parent_folder,
       }).then(async (res) => {
         this.loaded++;
         await this.getUserDrive();

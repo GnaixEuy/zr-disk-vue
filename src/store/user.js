@@ -20,7 +20,7 @@ const actions = {
     if (err) {
       app.$message.error(err);
     }
-    if (code == 200) commit("SET_USERINFO_DRIVE", data[0]);
+    if (code == 200) commit("SET_USERINFO_DRIVE", data);
     else app.$message.error(message);
   },
 };
@@ -28,9 +28,9 @@ const mutations = {
   SET_USERINFO(state, data) {
     state.userInfo = data;
   },
-  SET_USERINFO_DRIVE(state, { driveUsed, driveSize }) {
-    state.userInfo["driveUsed"] = driveUsed;
-    state.userInfo["driveSize"] = driveSize;
+  SET_USERINFO_DRIVE(userInfo) {
+    state.userInfo["driveUsed"] = userInfo.driveUsed;
+    state.userInfo["driveSize"] = userInfo.driveSize;
   },
 };
 const getters = {

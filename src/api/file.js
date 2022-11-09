@@ -25,7 +25,7 @@ function mkdir(params) {
 }
 
 function modify(params) {
-  return request.post("/api/file/modify", params);
+  return request.put("/file/modify", params);
 }
 
 function move(params) {
@@ -56,10 +56,8 @@ function getPhoto(params) {
   return request.get("/file/getPhoto", params);
 }
 
-function downloadFile(file_id, drive_id) {
-  return request.get(
-    `/file/getFileDownloadUrl?file_id=${file_id}&drive_id=${drive_id}`
-  );
+function downloadFile(file_id) {
+  return request.get(`/file/getFileDownloadUrl/${file_id}`);
 }
 
 function getFileTotal(params) {
