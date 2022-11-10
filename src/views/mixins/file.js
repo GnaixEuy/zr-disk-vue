@@ -100,8 +100,9 @@ let uploadFileMixin = {
       merge({
         md5: file_id,
         fileName,
-        parent_file_id,
+        parentFileId: parent_file_id,
         parentPath: parent_folder,
+        parentFolder: parent_folder,
       }).then(async (res) => {
         this.loaded++;
         await this.getUserDrive();

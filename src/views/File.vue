@@ -27,10 +27,7 @@
     <div class="breadcrumb">
       <el-breadcrumb separator-class="el-icon-arrow-right">
         <el-breadcrumb-item v-for="(item, index) in routers" :key="index">
-
-          <span class="nav_link" @click="goBack(item, index)">{{
-              item.name
-          }}</span>
+          <span class="nav_link" @click="goBack(item, index)">{{ item.file_name }}</span>
         </el-breadcrumb-item>
       </el-breadcrumb>
     </div>
@@ -83,7 +80,6 @@
 
 <script>
 import { mkdir, getSearch } from "../api/file";
-import { getMD5 } from "../utils/cryto";
 import Folder from "./Folder.vue";
 import { mapMutations, mapState } from "vuex";
 import uploadFileMixin from "./mixins/file";
@@ -126,15 +122,11 @@ export default {
   methods: {
     // 创建文件夹
     mkdir_btn() {
-      let { drive_id } = this.userInfo;
       let { dir_name } = this.dirParams;
       let parent_file_id = this.parent_file_id;
-      let file_id = getMD5(parent_file_id + dir_name);
       mkdir({
-        drive_id,
-        parent_file_id,
-        file_id,
-        filename: dir_name,
+        parentFileId: parent_file_id,
+        name: dir_name,
       }).then(() => {
         this.$refs.folder.getUserFile();
       });

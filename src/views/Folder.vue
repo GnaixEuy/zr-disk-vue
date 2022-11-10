@@ -5,8 +5,8 @@
         <el-col :span="3" v-for="(item, index) in ele" :key="index">
           <div class="fileItem" ref="fileItem" @contextmenu="handelMenu(index, key, $event)"
             @click="open(item, $event)">
-            <div class="selete" @click.stop="add_seleted(item, index)">
-              <el-checkbox v-model="arryCheck" :value="index" @change="handel(index)"></el-checkbox>
+            <div class="selete" @click.stop="add_seleted(item, index, key)">
+              <el-checkbox v-model="arryCheck" :value="index" @change="handel"></el-checkbox>
             </div>
             <div class="more" @click.stop="handelMenu(index, key, $event)">
               <i class="el-icon-more"></i>
@@ -96,7 +96,7 @@
 
     <div class="file_move" v-if="dialogMove">
       <el-dialog title="提示" :visible.sync="dialogMove" width="30%">
-        <el-tree :props="{ label: 'file_name' }" :load="loadNode" lazy @node-click="nodeClick"></el-tree>
+        <el-tree :props="{ label: 'name' }" :load="loadNode" lazy @node-click="nodeClick"></el-tree>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogMove = false">取 消</el-button>
           <el-button type="primary" @click="move_action" :disabled="disabled">确 定</el-button>
@@ -206,18 +206,19 @@ export default {
     // tree组件加载事件
     loadNode(node, resolve) {
       let file_id = "root";
+      let parentFileId = "root";
       if (node.level === 0) {
         return resolve([
-          { file_name: "root", parent_file_id: "root", file_id: "root" },
+          { name: "root", parentFileId: "root", id: "root" },
         ]);
       } else if (node.level > 1) {
-        file_id = node.data.file_id;
+        file_id = node.data.id;
+        parentFileId = file_id;
       }
-      getFolder({
-        drive_id: this.userInfo.drive_id,
-        parent_file_id: file_id,
-      }).then((data) => {
-        return resolve(data.data);
+      getFolder(
+        parentFileId
+      ).then((res) => {
+        return resolve(res.data);
       });
     },
 
@@ -225,13 +226,14 @@ export default {
 
     // 获取tree组件点击data
     nodeClick(data) {
-      let { file_id } = data;
-      let { parent_file_id, file_id: currentFile_id } =
+      let { id } = data;
+      console.log(data);
+      let { parentFileId, file_id: currentFile_id } =
         this.List[this.clickIndex];
-      this.currentFileId = file_id;
-      if (parent_file_id == "root" && file_id == "root") {
+      this.currentFileId = id;
+      if (parentFileId == "root" && id == "root") {
         this.disabled = true;
-      } else if (file_id == currentFile_id) {
+      } else if (id == currentFile_id) {
         this.disabled = true;
       } else {
         this.disabled = false;
@@ -269,9 +271,9 @@ export default {
       let listItem = [];
       let count = null;
       let aryLength = data.length;
-      // data.forEach((item) => {
-      //   item.DOMAIN = this.DOMAIN;
-      // });
+      data.forEach((item) => {
+        item.DOMAIN = this.DOMAIN;
+      });
       if (aryLength % 8 == 0) {
         count = aryLength / 8;
       } else {
@@ -286,13 +288,11 @@ export default {
     // 点击复制
     copy() { },
     // 获取用户文件
-    getUserFile(
-      parent_file_id = this.parent_file_id
-    ) {
+    getUserFile(parent_file_id = this.parent_file_id) {
       getFile({
         limit: this.pageLimit,
         page: this.currentPage,
-        parent_file_id,
+        parentFileId: parent_file_id,
       })
         .then((res) => {
           let { data } = res;
@@ -403,12 +403,12 @@ export default {
       let { type, id, name } = item;
       if (type == "folder") {
         this.loading = true;
-        this.getUserFile(this.userInfo.drive_id, id);
+        this.getUserFile(id);
         this.SET_PARENT_FILE_ID({
           parent_file_id: id,
           parent_folder: name,
         });
-        this.SET_ROUTER({ name, path: id });
+        this.SET_ROUTER({ file_name: "/" + name, path: id });
       } else if (type.includes("video")) {
         this.SET_VIDEO_INFO(item);
         this.SET_IS_OPEN(true);
@@ -417,7 +417,7 @@ export default {
         this.$audioPlayer.show(item);
       } else if (type.includes("search")) {
         this.SET_PARENT_FILE_ID({ parent_file_id: id });
-        this.SET_ROUTER({ name, path: id });
+        this.SET_ROUTER({ file_name: name, path: id });
       } else if (type.includes("image")) {
         this.formatImageData(this.List);
         let currentIndex = this.imageData.findIndex(
@@ -501,10 +501,9 @@ export default {
     // 移动文件
     move_action() {
       move({
-        drive_id: this.userInfo.drive_id,
-        parent_file_id: this.currentFileId,
-        parent_folder: this.parent_folder,
-        file_id: this.List[this.clickIndex].file_id,
+        parentFileId: this.currentFileId,
+        parentFolder: this.parent_folder,
+        id: this.List[this.clickIndex].id,
       })
         .then((res) => {
           this.$message.success(res.message);
@@ -531,6 +530,7 @@ export default {
     // 添加选中样式
     add_seleted(item, index) {
       let fileItem = this.$refs.fileItem;
+      console.log(fileItem[index]);
       fileItem[index].classList.add("active");
     },
   },

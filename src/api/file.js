@@ -21,7 +21,7 @@ function delFile(params) {
 }
 
 function mkdir(params) {
-  return request.post("/api/file/mkdir", params);
+  return request.post("/file/mkdir", params);
 }
 
 function modify(params) {
@@ -29,7 +29,7 @@ function modify(params) {
 }
 
 function move(params) {
-  return request.post("/api/file/move", params);
+  return request.put("/file/move", params);
 }
 
 function getUserUsedDrive(params) {
@@ -41,7 +41,7 @@ function getSearch(searchWord) {
 }
 
 function getFolder(params) {
-  return request.post("/file/getFolder", params);
+  return request.get(`/file/getFolder/${params}`);
 }
 
 function getCollection(params) {
