@@ -26,6 +26,19 @@ function modifyPass(params) {
   });
 }
 
+function findPass(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .put("/author/findPass", params)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 function modifyHeadImg(params) {
   return new Promise((resolve, reject) => {
     request
@@ -52,4 +65,4 @@ function getUserInfo(params) {
   });
 }
 
-export { modifyNick, modifyHeadImg, modifyPass, getUserInfo };
+export { modifyNick, modifyHeadImg, modifyPass, getUserInfo, findPass };

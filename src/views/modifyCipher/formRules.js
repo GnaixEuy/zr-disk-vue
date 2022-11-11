@@ -3,7 +3,7 @@ export default {
     return {
       rules: {
         username: [
-          { required: true, message: "邮箱是必须的", trigger: "blur" },
+          { required: true, message: "电话号码是必须的", trigger: "blur" },
           { validator: this.usernameValid, trigger: "blur" },
         ],
         newPassword: [
@@ -38,9 +38,9 @@ export default {
   methods: {
     // username验证回调
     usernameValid(rule, value, callback) {
-      let reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/g;
+      let reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (!reg.test(value)) {
-        callback(new Error("邮箱格式不正确！"));
+        callback(new Error("手机号码格式不正确！"));
       }
       callback();
     },

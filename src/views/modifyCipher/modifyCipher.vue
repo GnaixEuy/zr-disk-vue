@@ -10,7 +10,7 @@
         <h2 id="title">修改密码</h2>
         <el-form :model="modifyUser" :rules="rules" ref="modifyUser">
           <el-form-item prop="username">
-            <el-input type="text" v-model="modifyUser.username" autocomplete="off" placeholder="请输入邮箱" clearable>
+            <el-input type="text" v-model="modifyUser.username" autocomplete="off" placeholder="请输入手机号" clearable>
             </el-input>
           </el-form-item>
           <el-form-item prop="newPassword">
@@ -23,7 +23,7 @@
           <el-form-item prop="realVerificationCode">
             <el-row :gutter="15">
               <el-col :span="16">
-                <el-input type="text" v-model.number="modifyUser.realVerificationCode" autocomplete="off" maxlength="4"
+                <el-input type="text" v-model.number="modifyUser.realVerificationCode" autocomplete="off" maxlength="6"
                   placeholder="请输入验证码"></el-input>
               </el-col>
               <el-col :span="4">
@@ -48,7 +48,7 @@
 </template>
 <script>
 import { sendPwd } from "../../api/login";
-import { modifyPass } from "../../api/users";
+import { findPass } from "../../api/users";
 import LoginLeftArea from "../../components/LoginLeftArea/LoginLeftArea.vue";
 import { mapState } from "vuex";
 import rules from "./formRules";
@@ -71,26 +71,30 @@ export default {
   methods: {
     // 发送验证码
     sendAnPwd() {
-      let reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/g;
+      let reg = /^(13[0-9]|14[01456879]|15[0-35-9]|16[2567]|17[0-8]|18[0-9]|19[0-35-9])\d{8}$/;
       if (reg.test(this.modifyUser.username)) {
         this.isLoading = true;
-        sendPwd({ username: this.modifyUser.username }).then((res) => {
+        sendPwd(this.modifyUser.username).then((res) => {
           this.$message({ message: res.message, type: "success" });
           this.isLoading = false;
-        });
+        }).catch(() => {
+          this.$message({ message: "手机号码已发送，请注意查收", type: "error" });
+          this.isLoading = false;
+        })
       } else {
-        this.$message.error("邮箱格式不正确");
+        this.$message.error("手机号码格式不正确");
       }
     },
     modifyForm(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          modifyPass({
+          findPass({
             password: this.modifyUser.newPassword,
             username: this.modifyUser.username,
+            verificationCode: this.modifyUser.realVerificationCode
           })
             .then((data) => {
-              if (data.status !== 200) return this.$message.error(data.message);
+              if (data.code !== 200) return this.$message.error(data.message);
               this.$message.success(data.message);
               setTimeout(() => {
                 window.close();
