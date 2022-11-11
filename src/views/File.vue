@@ -16,7 +16,9 @@
             <li><i class="el-icon-document-add el-icon--left"></i>新建文件</li>
           </ul>
         </el-popover>
-        <el-button style="margin-left: 15px"><i class="el-icon-finished el-icon--left"></i>全选</el-button>
+        <el-button @click="selectAllFile" v-model="checkAll" style="margin-left: 15px"><i
+            class="el-icon-finished el-icon--left"></i>{{ checkAllShowValue }}
+        </el-button>
       </el-col>
       <el-col :span="3" :offset="6">
         <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
@@ -89,6 +91,7 @@ export default {
       checked: null,
       searchWord: null,
       checkAll: false,
+      checkAllShowValue: "全选",
       fileList: [],
       isIndeterminate: true,
       menuShow: false,
@@ -174,6 +177,21 @@ export default {
     nextClick(page) {
       this.SET_CURRENT_PAGE(page);
       this.$refs.folder.getUserFile();
+    },
+
+    selectAllFile() {
+      this.checkAll = !this.checkAll;
+      let fileItems = this.$refs.folder.$refs.fileItem;
+      fileItems.forEach(item => {
+        if (this.checkAll) {
+          item.classList.add("active")
+          this.checkAllShowValue = "取消全选"
+        } else {
+          item.classList.remove("active")
+          this.checkAllShowValue = "全选"
+        }
+      });
+
     },
 
     ...mapMutations("file", [
