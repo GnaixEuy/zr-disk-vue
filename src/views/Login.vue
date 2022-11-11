@@ -188,7 +188,9 @@ export default {
                 this.$router.push("/drive/file");
               }, 1500);
             }
-          });
+          }).catch(() => {
+            this.$message({ message: "手机号已被注册", type: "error" });
+          })
         }
       });
     },
@@ -209,13 +211,11 @@ export default {
               setTimeout(() => {
                 this.$router.push("/drive/file");
               }, 1500);
-            } else {
-              this.$message({ message, type: "error" });
-              this.login.password = "";
-              this.login.username = "";
             }
           } catch (error) {
-            console.log(error);
+            this.$message({ message: "用户名密码错误", type: "error" });
+            this.login.password = "";
+            this.login.username = "";
           }
         }
       });
