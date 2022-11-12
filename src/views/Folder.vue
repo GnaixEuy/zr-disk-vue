@@ -530,7 +530,6 @@ export default {
     // 添加选中样式
     add_seleted(item, index) {
       let fileItem = this.$refs.fileItem;
-      console.log(fileItem[index]);
       fileItem[index].classList.add("active");
     },
   },

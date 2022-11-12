@@ -209,10 +209,10 @@ export default {
             <el-input v-model="modify.oldPass" autocomplete="off" placeholder="请输入原密码"></el-input>
           </el-form-item> -->
           <el-form-item label="新密码" label-width="120px" prop="newPass">
-            <el-input v-model="modify.newPass" autocomplete="off" placeholder="请输入新密码"></el-input>
+            <el-input v-model="modify.newPass" type="password" autocomplete="off" placeholder="请输入新密码"></el-input>
           </el-form-item>
           <el-form-item label="确认密码" label-width="120px" prop="newPass">
-            <el-input v-model="modify.conPass" autocomplete="off" placeholder="请再次输入新密码"></el-input>
+            <el-input v-model="modify.conPass" type="password" autocomplete="off" placeholder="请再次输入新密码"></el-input>
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
