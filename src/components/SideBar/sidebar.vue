@@ -142,8 +142,10 @@ export default {
 
     // 退出
     loginOut() {
-      localStorage.removeItem("token");
-      this.$router.replace({ path: "/login" });
+      request.get("/user/logout").then(() => {
+        localStorage.removeItem("token");
+        this.$router.replace({ path: "/login" });
+      })
     },
   },
 };

@@ -80,7 +80,6 @@
     </div>
     <p class="icp">
       ©{{ fullYear }} 小破盘
-      <a href="//beian.miit.gov.cn">豫ICP备20017833号</a>
     </p>
   </div>
 </template>
