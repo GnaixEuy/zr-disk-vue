@@ -65,4 +65,94 @@ function getUserInfo(params) {
   });
 }
 
-export { modifyNick, modifyHeadImg, modifyPass, getUserInfo, findPass };
+function updateUserInfo(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .put("/user/updateUserInfo", params)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function searchUser(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .get(`/user/searchUser/${params}`)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function isFollow(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .get(`/user/isFollow/${params}`)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function follow(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .post(`/user/follow`, params)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function getFollowers() {
+  return new Promise((resolve, reject) => {
+    request
+      .get(`/user/getFollowers`)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+function getFans() {
+  return new Promise((resolve, reject) => {
+    request
+      .get(`/user/getFans`)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
+export {
+  modifyNick,
+  modifyHeadImg,
+  modifyPass,
+  getUserInfo,
+  findPass,
+  updateUserInfo,
+  searchUser,
+  isFollow,
+  follow,
+  getFollowers,
+  getFans,
+};

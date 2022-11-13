@@ -22,7 +22,7 @@ const state = {
     {
       path: "/drive/userInfo",
       name: "用户中心",
-      disable: true,
+      disable: false,
       icon: "el-icon-user",
     },
   ],

@@ -20,10 +20,17 @@
             class="el-icon-finished el-icon--left"></i>{{ checkAllShowValue }}
         </el-button>
       </el-col>
-      <el-col :span="3" :offset="6">
-        <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
-          @keydown.enter.native="searchFile"></el-input>
-      </el-col>
+      <el-row :gutter="20">
+        <el-col :span="3" :offset="1">
+          <el-switch v-model="searchType" active-color="#13ce66" inactive-color="#ff4949" active-text="用户"
+            inactive-text="文件" :active-value="1" :inactive-value="2">
+          </el-switch>
+        </el-col>
+        <el-col :span="5" :offset="2">
+          <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
+            @keydown.enter.native="searchFile"></el-input>
+        </el-col>
+      </el-row>
     </el-row>
 
     <div class="breadcrumb">
@@ -77,6 +84,44 @@
         </span>
       </el-dialog>
     </div>
+    <div class="nickname">
+      <el-dialog title="搜索用户" :visible.sync="searchUserDialog" width="30%" center>
+        <div class="PersonTop">
+          <div class="PersonTop_img">
+            <img v-if="searchUserInfo.headImg" :src="searchUserInfo.headImg.downloadUrl" />
+          </div>
+          <div class="PersonTop_text">
+            <div class="user_text">
+              <div class="user_name">
+                <span> {{ searchUserInfo.nickname }} </span>
+              </div>
+              <!-- <div class="user-v" v-if="v === 3">
+                <img src="" class="user-v-img" />
+                <span class="user-v-font">优质媒体作者</span>
+              </div> -->
+              <div class="user_qianming">
+                <span> {{ searchUserInfo.phone }}</span>
+              </div>
+              <div class="user_anniu">
+                <el-button v-model="isfollow" v-if="this.searchUserInfo.id != this.userInfo.id" @click="follow"
+                  type="primary" size="medium" icon="el-icon-check" v-text="isfollow ? '已关注' : '关注'">
+                </el-button>
+              </div>
+            </div>
+            <div class="user_num">
+              <div style="cursor: pointer">
+                <div class="num_number">{{ searchUserInfo.fanCounts }}</div>
+                <span class="num_text">粉丝</span>
+              </div>
+              <div style="cursor: pointer">
+                <div class="num_number">{{ searchUserInfo.followCounts }}</div>
+                <span class="num_text">关注</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -85,6 +130,7 @@ import { mkdir, getSearch } from "../api/file";
 import Folder from "./Folder.vue";
 import { mapMutations, mapState } from "vuex";
 import uploadFileMixin from "./mixins/file";
+import { follow, getUserInfo, isFollow, searchUser } from '../api/users';
 export default {
   data() {
     return {
@@ -103,6 +149,10 @@ export default {
         dir_name: "新建文件夹",
       },
       searchFileItem: [],
+      searchType: 2,
+      searchUserDialog: false,
+      searchUserInfo: {},
+      isfollow: false
     };
   },
   components: {
@@ -150,18 +200,51 @@ export default {
       document.body.removeChild(eleLink);
     },
 
+    follow() {
+      follow({ id: this.searchUserInfo.id, isFollow: !this.isfollow ? '关注' : '取消关注' }).then(res => {
+        let { code, message } = res;
+        if (code == 200) {
+          this.isfollow = !this.isfollow;
+          this.$message.success(message, "success");
+        }
+      })
+    },
+
     // 搜索文件
     searchFile() {
-      this.SET_ROUTER({
-        file_name: `${this.searchWord}的搜索结果`,
-        path: Date.now(),
-      });
-      getSearch(
-        this.searchWord,
-      ).then((res) => {
+      if (this.searchType == 1) {
+        getUserInfo().then(res => {
+          let { data, code } = res;
+          if (code == 200) {
+            this.userInfo = data;
+          }
+        })
+        searchUser(this.searchWord).then(res => {
+          let { code, message, data } = res;
+          if (code == 200) {
+            this.searchUserInfo = res.data;
+            this.$message.success(message, "success");
+            this.searchUserInfo = data;
+            isFollow(this.searchUserInfo.id).then(res => {
+              this.isFollow = res.data
+            })
+          }
+          this.searchUserDialog = true;
+        })
         this.searchWord = "";
-        this.searchFileItem = res.data;
-      });
+      } else {
+        this.SET_ROUTER({
+          file_name: `${this.searchWord}的搜索结果`,
+          path: Date.now(),
+        });
+        getSearch(
+          this.searchWord,
+        ).then((res) => {
+          this.searchWord = "";
+          this.searchFileItem = res.data;
+        });
+      }
+
     },
 
     // 导航后退
@@ -384,5 +467,169 @@ export default {
   height: 4px;
   width: 8px;
   transform: rotate(-45deg);
+}
+
+.me-video-player {
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+  position: fixed;
+  left: 0;
+  z-index: 0;
+  top: 0;
+}
+
+.PersonTop {
+  // height: 140px;
+  // padding-top: 20px;
+  background-color: white;
+  // margin-top: 30px;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  border-radius: 5px;
+}
+
+.PersonTop_img {
+  width: 60px;
+  height: 60px;
+  border-radius: 30px;
+  background-color: #8c939d;
+  margin-right: 24px;
+  margin-left: 20px;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.PersonTop_img img {
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+}
+
+.PersonTop_text {
+  // height: 120px;
+  width: 380px;
+  display: flex;
+}
+
+.user_text {
+  width: 60%;
+  height: 100%;
+  line-height: 30px;
+}
+
+.user_name {
+  font-weight: bold;
+}
+
+.user-v {
+  margin-bottom: -5px;
+}
+
+.user-v-img {
+  width: 15px;
+  height: 15px;
+}
+
+.user-v-font {
+  font-size: 15px;
+  color: #00c3ff;
+}
+
+.user_qianming {
+  font-size: 14px;
+  color: #999;
+}
+
+.user_num {
+  width: 40%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.user_num>div {
+  text-align: center;
+  border-right: 1px dotted #999;
+  box-sizing: border-box;
+  width: 80px;
+  height: 40px;
+  line-height: 20px;
+}
+
+.num_text {
+  color: #999;
+}
+
+.num_number {
+  font-size: 20px;
+  color: #333;
+}
+
+.el-menu-item>span {
+  font-size: 16px;
+  color: #999;
+}
+
+/*下面部分样式*/
+.person_body {
+  width: 1000px;
+  margin-top: 210px;
+  display: flex;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+
+.person_body_left {
+  width: 27%;
+  height: 600px;
+  border-radius: 5px;
+  margin-right: 3%;
+  text-align: center;
+}
+
+.person_body_list {
+  width: 100%;
+  height: 50px;
+  margin-top: 25px;
+  font-size: 22px;
+  border-bottom: 1px solid #f0f0f0;
+  background-image: -webkit-linear-gradient(left,
+      rgb(42, 134, 141),
+      #e9e625dc 20%,
+      #3498db 40%,
+      #e74c3c 60%,
+      #09ff009a 80%,
+      rgba(82, 196, 204, 0.281) 100%);
+  -webkit-text-fill-color: transparent;
+  -webkit-background-clip: text;
+  -webkit-background-size: 200% 100%;
+  -webkit-animation: masked-animation 4s linear infinite;
+}
+
+.el-menu-item {
+  margin-top: 22px;
+}
+
+.person_body_right {
+  width: 70%;
+  /* height: 500px; */
+  border-radius: 5px;
+  background-color: white;
+}
+
+.box-card {
+  height: 300px;
+}
+
+/*ui样式*/
+.el-button {
+  width: 84px;
 }
 </style>

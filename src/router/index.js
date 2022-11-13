@@ -51,6 +51,23 @@ const routes = [
         name: "Favorite",
         component: () => import("../views/Favorite.vue"),
       },
+      {
+        path: "userInfo",
+        name: "UserInfo",
+        component: () => import("../views/UserInfo.vue"),
+        children: [
+          {
+            path: "myFan",
+            name: "MyFan",
+            component: () => import("../views/MyFanAndFollow.vue"),
+          },
+          {
+            path: "myFollow",
+            name: "MyFollow",
+            component: () => import("../views/MyFanAndFollow.vue"),
+          },
+        ],
+      },
     ],
   },
   {
