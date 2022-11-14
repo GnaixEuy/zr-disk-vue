@@ -16,9 +16,9 @@
             <li><i class="el-icon-document-add el-icon--left"></i>新建文件</li>
           </ul>
         </el-popover>
-        <el-button @click="selectAllFile" v-model="checkAll" style="margin-left: 15px"><i
+        <!-- <el-button @click="selectAllFile" v-model="checkAll" style="margin-left: 15px"><i
             class="el-icon-finished el-icon--left"></i>{{ checkAllShowValue }}
-        </el-button>
+        </el-button> -->
       </el-col>
       <el-col :span="3" :offset="1">
         <el-switch v-model="searchType" active-color="#13ce66" inactive-color="#ff4949" active-text="用户"

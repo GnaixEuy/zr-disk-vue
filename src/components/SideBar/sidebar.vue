@@ -193,7 +193,7 @@ export default {
               <input type="file" ref="fileEle" @change="uploadFile" accept="image/*" style="display: none" />
               <li @click="modify_nick">修改昵称</li>
               <li @click="openModfityPass">修改密码</li>
-              <li>关于</li>
+              <!-- <li>关于</li> -->
               <li @click="loginOut">退出登录</li>
             </ul>
           </el-popover>
