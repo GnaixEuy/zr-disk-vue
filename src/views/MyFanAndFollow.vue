@@ -138,6 +138,7 @@ export default {
                         console.log(err);
                     });
             }
+            this.load();
         },
     },
 
