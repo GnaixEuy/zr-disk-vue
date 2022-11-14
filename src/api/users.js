@@ -143,6 +143,19 @@ function getFans() {
   });
 }
 
+function getFansById(params) {
+  return new Promise((resolve, reject) => {
+    request
+      .get(`/user/getFansById/${params}`)
+      .then((response) => {
+        resolve(response);
+      })
+      .catch((error) => {
+        reject(error);
+      });
+  });
+}
+
 export {
   modifyNick,
   modifyHeadImg,
@@ -155,4 +168,5 @@ export {
   follow,
   getFollowers,
   getFans,
+  getFansById,
 };

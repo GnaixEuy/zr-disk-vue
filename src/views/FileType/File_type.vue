@@ -1,5 +1,6 @@
 <template>
   <div class="files">
+    <!-- {{ type }} -->
     <div class="img" v-if="type.includes('image')">
       <img v-lazy="cover_url" />
       <i class="el-icon-star-on" v-if="isCollection"></i>
@@ -27,7 +28,7 @@
       <img :src="require('@/assets/folder.svg')" />
       <i class="el-icon-star-on" v-if="isCollection"></i>
     </div>
-    <div class="text" v-else-if="type.includes('text')">
+    <div class="text" v-else-if="type.includes('txt')">
       <img :src="require('@/assets/txt.svg')" />
       <i class="el-icon-star-on" v-if="isCollection"></i>
     </div>
@@ -46,6 +47,10 @@
     </div>
     <div class="doc" v-else-if="isDoc">
       <img :src="require('@/assets/doc.svg')" />
+      <i class="el-icon-star-on" v-if="isCollection"></i>
+    </div>
+    <div class="doc" v-else-if="type.includes('ppt')">
+      <img :src="require('@/assets/ppt.svg')" />
       <i class="el-icon-star-on" v-if="isCollection"></i>
     </div>
     <div class="file-item" v-else>

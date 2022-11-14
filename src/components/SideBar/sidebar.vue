@@ -1,5 +1,5 @@
 <script>
-import { modifyNick, modifyPass } from "../../api/users";
+import { getUserInfo, modifyNick, modifyPass } from "../../api/users";
 import { mapState } from "vuex";
 import request from "../../utils/request";
 export default {
@@ -76,9 +76,14 @@ export default {
             console.log(response.data.downloadUrl);
             // that.$message({ type: "success", response.message });
             that.userInfo.headImg.downloadUrl = response.data.downloadUrl;
+            getUserInfo().then(res => {
+              let { driveUsed, driveSize } = res.data;
+              let result = (driveUsed / driveSize).toFixed(2);
+              this.percentageStatua(result);
+              return result * 100;
+            })
           }
         })
-
       };
       reader.readAsDataURL(files);
     },

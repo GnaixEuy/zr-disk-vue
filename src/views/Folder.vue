@@ -12,6 +12,7 @@
               <i class="el-icon-more"></i>
             </div>
             <div class="img">
+              <!-- {{ item }} -->
               <FileType :item="item" />
             </div>
             <div class="title">
@@ -74,7 +75,7 @@
               </li>
               <li>
                 <div class="col"><i class="el-icon-receiving"></i>文件位置</div>
-                <span>{{ fileInfo.parent_folder }}</span>
+                <span>{{ fileInfo.parentFolder }}</span>
               </li>
               <li>
                 <div class="col"><i class="el-icon-date"></i>创建时间</div>

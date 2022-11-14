@@ -20,17 +20,15 @@
             class="el-icon-finished el-icon--left"></i>{{ checkAllShowValue }}
         </el-button>
       </el-col>
-      <el-row :gutter="20">
-        <el-col :span="3" :offset="1">
-          <el-switch v-model="searchType" active-color="#13ce66" inactive-color="#ff4949" active-text="用户"
-            inactive-text="文件" :active-value="1" :inactive-value="2">
-          </el-switch>
-        </el-col>
-        <el-col :span="5" :offset="2">
-          <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
-            @keydown.enter.native="searchFile"></el-input>
-        </el-col>
-      </el-row>
+      <el-col :span="3" :offset="1">
+        <el-switch v-model="searchType" active-color="#13ce66" inactive-color="#ff4949" active-text="用户"
+          inactive-text="文件" :active-value="1" :inactive-value="2">
+        </el-switch>
+      </el-col>
+      <el-col :span="5" :offset="2">
+        <el-input placeholder="请输入内容" suffix-icon="el-icon-search" v-model="searchWord"
+          @keydown.enter.native="searchFile"></el-input>
+      </el-col>
     </el-row>
 
     <div class="breadcrumb">
@@ -110,11 +108,14 @@
             </div>
             <div class="user_num">
               <div style="cursor: pointer">
-                <div class="num_number">{{ searchUserInfo.fanCounts }}</div>
+                <div class="num_number" v-if="searchUserInfo.fanCounts">{{ searchUserInfo.fanCounts.length }}</div>
+                <div class="num_number" v-else>0</div>
                 <span class="num_text">粉丝</span>
               </div>
               <div style="cursor: pointer">
-                <div class="num_number">{{ searchUserInfo.followCounts }}</div>
+                <div class="num_number" v-if="searchUserInfo.followCounts">{{ searchUserInfo.followCounts.length }}
+                </div>
+                <div class="num_number" v-else>0</div>
                 <span class="num_text">关注</span>
               </div>
             </div>
@@ -130,7 +131,7 @@ import { mkdir, getSearch } from "../api/file";
 import Folder from "./Folder.vue";
 import { mapMutations, mapState } from "vuex";
 import uploadFileMixin from "./mixins/file";
-import { follow, getUserInfo, isFollow, searchUser } from '../api/users';
+import { follow, getFansById, getUserInfo, isFollow, searchUser } from '../api/users';
 export default {
   data() {
     return {
@@ -228,6 +229,13 @@ export default {
             isFollow(this.searchUserInfo.id).then(res => {
               this.isFollow = res.data
             })
+            getFansById(this.searchUserInfo.id).then(res => {
+              let { code, data } = res;
+              if (code == 200) {
+                this.searchUserInfo.fanCounts = data;
+              }
+            })
+
           }
           this.searchUserDialog = true;
         })
@@ -484,6 +492,7 @@ export default {
 .PersonTop {
   // height: 140px;
   // padding-top: 20px;
+  width: 100%;
   background-color: white;
   // margin-top: 30px;
   position: absolute;

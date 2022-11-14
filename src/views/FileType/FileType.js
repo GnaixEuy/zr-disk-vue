@@ -13,12 +13,13 @@ export default {
       return `${this.item.coverUrl}`;
     },
     isDoc() {
-      return this.type.includes("msword") && this.file_name.includes("doc");
+      return (
+        this.type.includes("doc") &&
+        (this.file_name.includes("docx") || this.file_name.includes("doc"))
+      );
     },
     isExe() {
-      return (
-        this.file_name.includes("exe") && this.type.includes("octet-stream")
-      );
+      return this.file_name.includes("xlsx") && this.type.includes("exe");
     },
     isZip() {
       return (
